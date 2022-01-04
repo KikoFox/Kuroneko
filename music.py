@@ -58,36 +58,30 @@ class Music(commands.Cog):
         self.bot = current_bot
 
     @commands.command()
-    async def join(self, ctx, *, channel: discord.VoiceChannel):
+    async def join(self, ctx):
         """Joins a voice channel"""
 
+        if ctx.author.voice is None:
+            return await ctx.send(
+                "You are not connected to a voice channel, please connect to the channel you want the bot to join.")
+
         if ctx.voice_client is not None:
-            return await ctx.voice_client.move_to(channel)
+            await ctx.voice_client.disconnect()
 
-        await channel.connect()
-
-    @commands.command()
-    async def play(self, ctx, *, query):
-        """Plays a file from the local filesystem"""
-
-        source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(query))
-        ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
-
-        await ctx.send('Now playing: {}'.format(query))
+        await ctx.author.voice.channel.connect()
 
     @commands.command()
-    async def yt(self, ctx, *, url):
-        """Plays from a url (almost anything youtube_dl supports)"""
+    async def leave(self, ctx):
+        """Disconnects the bot from voice"""
 
-        async with ctx.typing():
-            player = await YTDLSource.from_url(url, loop=self.bot.loop)
-            ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+        if ctx.voice_client is not None:
+            return await ctx.voice_client.disconnect()
 
-        await ctx.send('Now playing: {}'.format(player.title))
+        await ctx.send("I am not connected to a voice channel.")
 
     @commands.command()
-    async def stream(self, ctx, *, url):
-        """Streams from a url (same as yt, but doesn't predownload)"""
+    async def play(self, ctx, *, url):
+        """Play from a url"""
 
         async with ctx.typing():
             player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
@@ -107,6 +101,26 @@ class Music(commands.Cog):
 
     @commands.command()
     async def stop(self, ctx):
-        """Stops and disconnects the bot from voice"""
+        """Stops the bot playing a voice channel"""
 
-        await ctx.voice_client.disconnect()
+        ctx.voice_client.stop()
+        await ctx.send("The current song has been stoped.")
+
+    @commands.command()
+    async def pause(self, ctx):
+        if ctx.voice_client.is_paused():
+            return await ctx.send("I am already paused.")
+
+        ctx.voice_client.pause()
+        await ctx.send("The current song has been paused.")
+
+    @commands.command()
+    async def resume(self, ctx):
+        if ctx.voice_client is None:
+            return await ctx.send("I am not connected to a voice channel.")
+
+        if not ctx.voice_client.is_paused():
+            return await ctx.send("I am already playing a song.")
+
+        ctx.voice_client.resume()
+        await ctx.send("The current song has been resumed.")

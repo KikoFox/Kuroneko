@@ -1,11 +1,11 @@
 import discord
 from discord.ext import commands
-from decouple import config
-import tools
 from fun import Fun
 from music import Music
 from PIL import Image
 from io import BytesIO
+import config
+import tools
 
 
 intents = discord.Intents.default()
@@ -43,4 +43,4 @@ async def on_member_join(member):
 
 bot.add_cog(Music(bot))
 bot.add_cog(Fun(bot))
-bot.run(config('TOKEN'))
+bot.run(config.setting['TOKEN'])

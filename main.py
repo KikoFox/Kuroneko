@@ -4,7 +4,7 @@ from fun import Fun
 from music import Music
 from PIL import Image
 from io import BytesIO
-import config
+from decouple import config
 import tools
 
 

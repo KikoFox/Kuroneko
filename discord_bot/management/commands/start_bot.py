@@ -10,7 +10,7 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = 'Run discord bot with django server'
+    help = 'Run discord bot without django server'
 
     def handle(self, *args, **options):
 

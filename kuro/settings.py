@@ -11,16 +11,20 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import dotenv_values
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+path_to_env = os.path.join(BASE_DIR, '../', '.env')
+CONFIG = dotenv_values(path_to_env)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-8a)xa3r&08y8hp$hk6e=&@b&@txmg05#p-z+%h&^%6=819=k-!'
+SECRET_KEY = CONFIG['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -123,4 +127,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-TOKEN = 'ODc1OTEwNjczMTY1NjA2OTQy.YRcZYg.XPh18nBv1zqLxA-ZDU5xWtmMG_E'
+TOKEN = CONFIG['TOKEN']
